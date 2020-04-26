@@ -1,11 +1,13 @@
 import React from "react";
 import gql from "graphql-tag";
-import { graphql } from "react-apollo";
+import { useMutation, useQuery } from "@apollo/react-hooks";
 
-const LyricList = (props) => {
+const LyricList = ({lyrics}) => {
+  console.log('props:', lyrics);
+  const [likeLyric] = useMutation(LIKE_LYRIC);
 
   const onLike = (id, likes) => {
-    props.mutate({
+    likeLyric({
       variables: { id },
       optimisticResponse: {
         __typename: "Mutation",
@@ -19,7 +21,8 @@ const LyricList = (props) => {
   };
 
    const renderLyrics = () =>  {
-    return props.lyrics.map(({ id, content, likes }) => 
+     if (!lyrics) return <div>no lyrics</div>
+    return lyrics.map(({ id, content, likes }) => 
       <li key={id} className="collection-item">
         {content}
         <i className="material-icons right" onClick={() => onLike(id, likes)}>
@@ -38,7 +41,7 @@ const LyricList = (props) => {
 }
 
 
-const mutation = gql`
+const LIKE_LYRIC = gql`
   mutation LikeLyric($id: ID) {
     likeLyric(id: $id) {
       id
@@ -47,4 +50,4 @@ const mutation = gql`
   }
 `;
 
-export default graphql(mutation)(LyricList);
+export default LyricList;

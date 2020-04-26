@@ -1,5 +1,5 @@
 import React from "react";
-import { useMutation, useQuery } from "@apollo/react-hooks";
+import { useQuery } from "@apollo/react-hooks";
 import getSong from "../queries/getOneSong";
 import { Link, useParams } from "react-router-dom";
 import LyricCreate from "./LyricCreate";
@@ -18,16 +18,10 @@ const SongDetail = () => {
     <>
       <Link to="/">Back</Link>
       <h3>{song.title}</h3>
-      {/* <LyricList lyrics={song.lyrics} />
-      <LyricCreate songId={id} /> */}
+      <LyricList lyrics={song.lyrics} />
+      <LyricCreate songId={id} />
     </>
   );
 }
 
 export default SongDetail;
-
-// export default graphql(getSong, {
-//   options: (props) => {
-//     return { variables: { id: props.params.id } };
-//   },
-// })(SongDetail);
