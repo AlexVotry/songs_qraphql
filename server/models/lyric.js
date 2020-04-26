@@ -9,7 +9,7 @@ const LyricSchema = new Schema({
 
 // add a function to the schema:
 LyricSchema.statics.like = async (id) => {
-  const Lyric = mongoos.model('lyric');
+  const Lyric = mongoose.model("lyric");
   const lyric = await Lyric.findById(id)
   ++lyric.likes;
 

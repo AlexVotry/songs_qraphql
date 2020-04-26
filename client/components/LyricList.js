@@ -1,6 +1,6 @@
 import React from "react";
 import gql from "graphql-tag";
-import { useMutation, useQuery } from "@apollo/react-hooks";
+import { useMutation } from "@apollo/react-hooks";
 
 const LyricList = ({lyrics}) => {
   console.log('props:', lyrics);
@@ -21,7 +21,7 @@ const LyricList = ({lyrics}) => {
   };
 
    const renderLyrics = () =>  {
-     if (!lyrics) return <div>no lyrics</div>
+     if (!lyrics) return <h4>no lyrics</h4>
     return lyrics.map(({ id, content, likes }) => 
       <li key={id} className="collection-item">
         {content}
@@ -42,7 +42,7 @@ const LyricList = ({lyrics}) => {
 
 
 const LIKE_LYRIC = gql`
-  mutation LikeLyric($id: ID) {
+  mutation LikeLyric($id: String) {
     likeLyric(id: $id) {
       id
       likes
