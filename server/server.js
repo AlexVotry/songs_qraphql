@@ -14,7 +14,7 @@ if (!MONGO_URI) {
 
 mongoose.Promise = global.Promise;
 mongoose
-  .connect(MONGO_URI)
+  .connect(MONGO_URI, )
   .then(
     mongoose.connection
       .once("open", () => console.log("Connected to MongoLab instance."))

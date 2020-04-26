@@ -1,15 +1,17 @@
 import React from "react";
-import { graphql } from "react-apollo";
+import { useMutation, useQuery } from '@apollo/react-hooks';
 import gql from "graphql-tag";
 import { Link } from "react-router-dom";
 import query from "../queries/fetchSongs";
 
-const SongList = (props) => {
+const SongList = () => {
+  const { loading, error, data } = useQuery(query);
+  const [deleteSongMutation] = useMutation(DELETE_SONG);
 
   const renderSongTitles = () => {
-    return props.data.songs.map(({ id, title }) => 
+    return data.songs.map(({ id, title }) => 
     <li className="collection-item" key={id}>
-      <Link to={`/songs/${id}`} >
+      <Link to={`songs/${id}`} >
         {title}
       </Link>
       <i className="material-icons right" style={{ cursor: "pointer" }} onClick={() => onSongDelete(id)}>
@@ -18,20 +20,31 @@ const SongList = (props) => {
     </li>)
   }
 
-  const onSongDelete = async (id) => {
-    await props.mutate({ variables: id });
-    props.data.refetch();
+  const onSongDelete = (id) => {
+    deleteSongMutation({
+      variables: { id },
+      update: (cache) => {
+          const existingSongs = data.songs;
+          const remainingSongs = existingSongs.filter(s => (s.id !== id));
+          cache.writeQuery({
+            query,
+            data: { songs: remainingSongs}
+          })
+        }
+    });
   };
 
-  if (props.data.loading) return <div>Loading ...</div>
+  if (loading) return <div>Loading ...</div>
+  if (error) return 'Error!'; 
 
   return (
     <>
+    <h3>Song List</h3>
       <ul className="collection">
         {renderSongTitles()}
       </ul>
       <Link
-        to="/songs/new"
+        to="songs/new"
         className="btn-floating btn-large red right"
         >
           <i className="material-icons">add</i>
@@ -40,7 +53,7 @@ const SongList = (props) => {
   );
 };
 
-const mutation = gql`
+const DELETE_SONG = gql`
   mutation DeleteSong($id: ID) {
     deleteSong(id: $id) {
       id
@@ -49,4 +62,4 @@ const mutation = gql`
   }
 `;
 
-export default graphql(mutation)(graphql(query)(SongList));
+export default SongList;

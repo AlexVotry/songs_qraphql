@@ -1,19 +1,24 @@
 import React, { useState } from "react";
 import gql from "graphql-tag";
-import { graphql } from "react-apollo";
+import { useMutation, useQuery } from "@apollo/react-hooks";
 import { Link, useHistory } from "react-router-dom";
 import query from "../queries/fetchSongs";
+import SongList from "./SongList";
 
-const SongCreate = (props) => {
+const SongCreate = () => {
+  const { loading, error, data } = useQuery(query);
+  const [addSongMutation] = useMutation(ADD_SONG);
   const [title, setTitle] = useState('');
   const [submitted, setSubmitted] = useState(false);
   let history = useHistory();
 
-  const onSubmit = async (e) => {
+  console.log('songs:', data);
+
+  const onSubmit = (e) => {
     e.preventDefault();
-    await props.mutate({
+    addSongMutation({
       variables: { title },
-      refetchQueries: [{ query }] //apollo doesn't update list unless we manually query again.
+      refetchQueries: [{ query }],
     });
     history.push('/');
   };
@@ -38,7 +43,7 @@ const SongCreate = (props) => {
   )
 }
 
-export const mutation = gql`
+export const ADD_SONG = gql`
   mutation AddSong($title: String) {
     addSong(title: $title) {
       title
@@ -46,4 +51,4 @@ export const mutation = gql`
   }
 `;
 
-export default graphql(mutation)(SongCreate);
+export default SongCreate;
